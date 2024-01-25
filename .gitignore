@@ -1,0 +1,5 @@
+.git
+__pycache__
+venv
+to-dos.db
+.env
