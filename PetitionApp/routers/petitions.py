@@ -29,8 +29,7 @@ user_dependency = Annotated[dict, Depends(get_current_user)]
 
 class PetitionRequest(BaseModel):
     petition_name: str = Field(min_length=3)
-    petition_text: str = Field(min_length=3, max_length=100)
-    user_id: int = Field(gt=0, lt=600)
+    petition_text: str = Field(min_length=3, max_length=1000)
     image: str = Field(min_lenght=1)
           
 
@@ -56,7 +55,7 @@ async def read_petition_by_id(user: user_dependency, db: db_dependency, petition
 async def create_petition(user: user_dependency, db: db_dependency, petition_request: PetitionRequest):
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication Failed')
-    petition_model = PetitionRequest(**petition_request.model_dump(), owner_id=user.get('id'))
+    petition_model = Petition(**petition_request.model_dump(), user_id=user.get('id')) #PetitionRequest?
     
     db.add(petition_model)
     db.commit()
@@ -69,7 +68,7 @@ async def update_petition_by_id(user: user_dependency, db: db_dependency, petiti
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication Failed')
     
-    petition_model = db.query(Petition).filter(Petition.id == petition_id).filter(Petition.owner_id == user.get('id') ).first()
+    petition_model = db.query(Petition).filter(Petition.id == petition_id).filter(Petition.user_id == user.get('id') ).first()
     if petition_model is None:
         raise HTTPException(status_code=404, detail='Petition not found')
     
@@ -87,10 +86,10 @@ async def delete_petition_by_id(user: user_dependency, db: db_dependency, petiti
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication Failed')
     
-    petition_model = db.query(Petition).filter(Petition.id == petition_id).filter(Petition.owner_id == user.get('id')).first()
+    petition_model = db.query(Petition).filter(Petition.id == petition_id).filter(Petition.user_id == user.get('id')).first()
     if petition_model is None:
         raise HTTPException(status_code=404, detail='Petition not found')
-    db.query(Petition).filter(Petition.id == petition_id).filter(Petition.owner_id == user.get('id')).delete()
+    db.query(Petition).filter(Petition.id == petition_id).filter(Petition.user_id == user.get('id')).delete()
 
     db.commit()
 
