@@ -1,5 +1,5 @@
 .git
 __pycache__
-venv
+.venv
 to-dos.db
 .env
