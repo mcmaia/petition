@@ -1,10 +1,11 @@
 CREATE TABLE signature (
-    ID SERIAL PRIMARY KEY,
-    petition_id INTEGER REFERENCES petition(ID),
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    phone VARCHAR(20) NOT NULL,
-    city VARCHAR(100) NOT NULL,
-    state VARCHAR(50) NOT NULL,
-    show_signature BOOLEAN NOT NULL
+    id SERIAL PRIMARY KEY,
+    petition_id INTEGER REFERENCES petition(id),
+    name VARCHAR(255),
+    email VARCHAR(255),
+    phone VARCHAR(20),
+    city VARCHAR(100),
+    state VARCHAR(50),
+    show_signature BOOLEAN,
+    user_id INTEGER REFERENCES users(id)
 );
