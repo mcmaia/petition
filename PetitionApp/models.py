@@ -22,5 +22,20 @@ class Petition(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     petition_name = Column(String)
     petition_text = Column(String)
-    image = Column(String)
+    images = Column(String)
+
+
+class Signature(Base):
+    __tablename__ = 'signature'
+
+    id = Column(Integer, primary_key=True, index=True)
+    petition_id = Column(Integer, ForeignKey('petition.id'))
+    name = Column(String(255))
+    email = Column(String(255))
+    phone = Column(String(20))
+    city = Column(String(100))
+    state = Column(String(50))
+    show_signature = Column(Boolean)
+    user_id = Column(Integer, ForeignKey('users.id'))
+
 

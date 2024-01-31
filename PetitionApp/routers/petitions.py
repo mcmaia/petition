@@ -30,7 +30,7 @@ user_dependency = Annotated[dict, Depends(get_current_user)]
 class PetitionRequest(BaseModel):
     petition_name: str = Field(min_length=3)
     petition_text: str = Field(min_length=3, max_length=1000)
-    image: str = Field(min_lenght=1)
+    images: str 
           
 
 @router.get('/', status_code=status.HTTP_200_OK)
@@ -55,7 +55,12 @@ async def read_petition_by_id(user: user_dependency, db: db_dependency, petition
 async def create_petition(user: user_dependency, db: db_dependency, petition_request: PetitionRequest):
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication Failed')
-    petition_model = Petition(**petition_request.model_dump(), user_id=user.get('id')) #PetitionRequest?
+    petition_model = Petition(
+        petition_name=petition_request.petition_name,
+        petition_text=petition_request.petition_text,
+        images=petition_request.images,
+        user_id=user.get('id')
+    )
     
     db.add(petition_model)
     db.commit()

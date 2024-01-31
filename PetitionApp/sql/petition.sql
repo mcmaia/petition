@@ -5,3 +5,5 @@ CREATE TABLE petition (
     petition_text TEXT NOT NULL,
     images BASE64
 );
+
+
