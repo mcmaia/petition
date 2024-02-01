@@ -1,0 +1,29 @@
+cookie:
+  expiry_days: 30
+  key: some_signature_key
+  name: petitions_br
+credentials:
+  usernames:
+    paulo:
+      admin_id : 1
+      email: app@dalpian.com
+      name: Paulo Dalpian
+      password: $2b$12$g/2CUnmWIZVQ54h0edpRWuCPGtirlUl0hWmVZoijiQKXiMIsIsmt6 #abcde
+    mcmaia:
+      admin_id : 2
+      email: jsmith@gmail.com
+      name: Marcelo C Maia
+      password: $2b$12$EsGoA.dOykbMRDRVhj7pAu4qM5FkUIALFFx4ddUvbgTB.TbiT8KK2 #teste123
+    rbriggs:
+      admin_id : 3
+      email: rbriggs@gmail.com
+      name: Rebecca Briggs
+      password: $2b$12$uNaTgvGPG9rMbzOJHYaPQePw0DUfp1qHBrSq6l4O304qani6pKFpm
+    rcouper:
+      admin_id : 4
+      email: rcouper@gmail.com
+      name: Ross Couper
+      password: $2b$12$Tir/PbHVmmnt5kgNxgOwMuxNIb2fv2pJ.q71TW8ekvbugCqkye4yu
+preauthorized:
+  emails:
+  - melsby@gmail.com
