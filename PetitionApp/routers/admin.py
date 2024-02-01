@@ -2,7 +2,7 @@ from typing import Annotated
 from sqlalchemy.orm import Session
 
 from fastapi import Depends, HTTPException, Path, APIRouter
-from models import Petition
+from models import Petition, Signature
 from database import SessionLocal
 from starlette import status
 from .auth import get_current_user
@@ -32,6 +32,12 @@ async def read_all(user: user_dependency, db: db_dependency):
         raise HTTPException(status_code=401, detail='Authentication Failed')
     return db.query(Petition).all()
 
+@router.get("/signature", status_code=status.HTTP_200_OK)
+async def read_all(user: user_dependency, db: db_dependency):
+    if user is None or user.get('user_role') != 'Admin':
+        raise HTTPException(status_code=401, detail='Authentication Failed')
+    return db.query(Signature).all()
+
 
 @router.delete("/petition/{petition_id}", status_code=status.HTTP_202_ACCEPTED)
 async def delete_petition(user: user_dependency, db: db_dependency, petition_id: int = Path(gt=0)):
@@ -42,5 +48,17 @@ async def delete_petition(user: user_dependency, db: db_dependency, petition_id:
     if todo_model is None:
         raise HTTPException(status_code=404, detail='Petition not found')
     db.query(Petition).filter(Petition.id ==  petition_id).delete()
+
+    db.commit()
+
+@router.delete("/signature/{signature_id}", status_code=status.HTTP_202_ACCEPTED)
+async def delete_petition(user: user_dependency, db: db_dependency, signature_id: int = Path(gt=0)):
+    if user is None or user.get('user_role') != 'Admin':
+        raise HTTPException(status_code=401, detail='Authentication Failed')
+    
+    todo_model = db.query(Signature).filter(Signature.id == signature_id).first()
+    if todo_model is None:
+        raise HTTPException(status_code=404, detail='Signature not found')
+    db.query(Signature).filter(Signature.id ==  signature_id).delete()
 
     db.commit()
