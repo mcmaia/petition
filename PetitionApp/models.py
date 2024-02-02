@@ -37,5 +37,6 @@ class Signature(Base):
     state = Column(String(50))
     show_signature = Column(Boolean)
     user_id = Column(Integer, ForeignKey('users.id'))
+    validated_signature = Column(Boolean)
 
 

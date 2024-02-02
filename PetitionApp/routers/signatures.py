@@ -34,7 +34,12 @@ class SignatureRequest(BaseModel):
     city: str
     state: str
     show_signature: bool
+    validated_signature: bool
     petition_id: int
+
+class SignatureValidation(BaseModel):
+    id: int
+    validated: bool 
           
 
 @router.get('/', status_code=status.HTTP_200_OK)
@@ -59,7 +64,7 @@ async def read_signature_by_id(user: user_dependency, db: db_dependency, signatu
 async def create_signature(user: user_dependency, db: db_dependency, signature_request: SignatureRequest):
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication Failed')
-    signature_model = Signature(**signature_request.model_dump(), user_id=user.get('id')) 
+    signature_model = Signature(**signature_request.model_dump(), user_id=user.get('id'), validated_signature = False) 
     
     db.add(signature_model)
     db.commit()
@@ -94,8 +99,17 @@ async def delete_signature_by_id(user: user_dependency, db: db_dependency, signa
     if signature_model is None:
         raise HTTPException(status_code=404, detail='Signature not found')
     db.query(Signature).filter(Signature.id == signature_id).filter(Signature.user_id == user.get('id')).delete()
-
     db.commit()
 
+@router.put('/validate/{signature_id}', status_code=status.HTTP_200_OK)
+@router.get('/validate/{signature_id}', status_code=status.HTTP_200_OK) # Added a get method for naked calls
+async def update_signature_by_id(db: db_dependency, signature_id: int = Path(gt=0)):
 
+    signature_model = db.query(Signature).filter(Signature.id == signature_id).first()
+    if signature_model is None:
+        raise HTTPException(status_code=404, detail='Signature not found')
     
+    signature_model.validated_signature = True
+    db.add(signature_model)
+    db.commit() 
+    return signature_model.validated_signature
