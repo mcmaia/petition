@@ -34,12 +34,7 @@ class SignatureRequest(BaseModel):
     city: str
     state: str
     show_signature: bool
-    validated_signature: bool
     petition_id: int
-
-class SignatureValidation(BaseModel):
-    id: int
-    validated: bool 
           
 
 @router.get('/', status_code=status.HTTP_200_OK)
@@ -73,7 +68,7 @@ async def create_signature(user: user_dependency, db: db_dependency, signature_r
 
 
 @router.put('/{signature_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def update_signature_by_id(user: user_dependency, db: db_dependency, signature_request: SignatureRequest, signature_id: int = Path(gt=0)):
+async def update_signature_by_id(user: user_dependency, db: db_dependency, signature_id: int = Path(gt=0)):
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication Failed')
     
