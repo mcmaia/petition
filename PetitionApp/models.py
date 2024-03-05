@@ -38,5 +38,23 @@ class Signature(Base):
     show_signature = Column(Boolean)
     user_id = Column(Integer, ForeignKey('users.id'))
     validated_signature = Column(Boolean)
+    can_be_contacted = Column(Boolean)
 
+class Complaint(Base):
+    __tablename__ = 'complaints'
 
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255))
+    email = Column(String(255))
+    phone = Column(String(20))
+    city = Column(String(100))
+    state = Column(String(50))
+    complaint_type = Column(Integer)
+    complaint_text = Column(String)
+
+class Complaint_Type(Base):
+    __tablename__ = 'complaints_type'
+    
+    id = Column(Integer, primary_key=True, index=True)
+    complaint_type = Column(Integer)
+    dictionary = Column(String)

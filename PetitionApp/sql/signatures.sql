@@ -7,6 +7,7 @@ CREATE TABLE signature (
     city VARCHAR(100),
     state VARCHAR(50),
     show_signature BOOLEAN,
+    can_be_contacted BOOLEAN,
     validated_signature BOOLEAN,
     user_id INTEGER REFERENCES users(id)
 );
