@@ -35,6 +35,7 @@ class SignatureRequest(BaseModel):
     state: str
     show_signature: bool
     petition_id: int
+    can_be_contacted: bool
           
 
 @router.get('/', status_code=status.HTTP_200_OK)
@@ -56,10 +57,11 @@ async def read_signature_by_id(user: user_dependency, db: db_dependency, signatu
 
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
-async def create_signature(user: user_dependency, db: db_dependency, signature_request: SignatureRequest):
-    if user is None:
-        raise HTTPException(status_code=401, detail='Authentication Failed')
-    signature_model = Signature(**signature_request.model_dump(), user_id=user.get('id'), validated_signature = False) 
+async def create_signature(db: db_dependency, signature_request: SignatureRequest): #, user: user_dependency):
+    # É necessário estar autenticado para ASSINAR ALGO? <----------------------------------------------------------------
+    # if user is None:
+    #     raise HTTPException(status_code=401, detail='Authentication Failed')
+    signature_model = Signature(**signature_request.model_dump(), validated_signature = False) #,user_id=user.get('id')) 
     
     db.add(signature_model)
     db.commit()
