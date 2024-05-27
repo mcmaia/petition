@@ -1,18 +1,34 @@
+# import sys
+# sys.path.append("..")
+from typing import Optional
 from typing import Annotated
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
+from fastapi import FastAPI
+import models
 
-from fastapi import Depends, HTTPException, Path, APIRouter
+from fastapi import Depends, HTTPException, Path, APIRouter, Request
 from models import Petition
-from database import SessionLocal
+from database import engine, SessionLocal
 from starlette import status
 from .auth import get_current_user
+
+from fastapi.responses import RedirectResponse, JSONResponse, PlainTextResponse, FileResponse, StreamingResponse 
+from fastapi import status
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+
 
 
 router = APIRouter(
     prefix='/petitions',
-    tags=['Petitions']
+    tags=['Petitions'],
+    responses={404: {"description": "Not found"}}
 )
+
+models.Base.metadata.create_all(bind=engine)
+
+templates = Jinja2Templates(directory="templates")
 
 
 def get_db():
@@ -25,6 +41,22 @@ def get_db():
         
 db_dependency = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[dict, Depends(get_current_user)]
+
+
+@router.get("/",response_class=HTMLResponse)
+async def read_all_by_user(request : Request, db: Session = Depends(get_db)):
+    user = await get_current_user(request)
+    if user is None:
+        return RedirectResponse(url="/auth", status_code=status.HTTP_302_FOUND)#adicionar para todas as paginas para quando nao tiver os cookie de login ele sera redirecionado para pagina de login
+
+    petition=db.query(models.Petition).filter(models.Petition.owner_id == user.get("id")).all()
+    return templates.TemplateResponse("home.html",{"request":request,"user":user,"petition":petition})
+
+#add router get /
+
+@router.get("/home",response_class=HTMLResponse)
+async def add_home(request : Request):
+    return templates.TemplateResponse("home.html",{"request": request})
 
 
 class PetitionRequest(BaseModel):
@@ -79,7 +111,7 @@ async def update_petition_by_id(user: user_dependency, db: db_dependency, petiti
     
     petition_model.petition_name = petition_request.petition_name # type: ignore
     petition_model.petition_text = petition_request.petition_text # type: ignore
-    petition_model.image = petition_request.image # type: ignore
+    petition_model.images = petition_request.images # type: ignore
 
 
     db.add(petition_model)
